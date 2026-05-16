@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Art Generator // Enes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: #0a0a0f;
+            color: #00ff66;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(16, 16, 24, 0.8);
+            border: 1px solid #00ff66;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.5);
+        }
+
+        p.subtitle {
+            color: #888899;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .input-box {
+            width: 100%;
+            padding: 15px;
+            background: #050508;
+            border: 1px solid #333;
+            color: #00ff66;
+            font-size: 1.2rem;
+            border-radius: 6px;
+            outline: none;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: border 0.3s;
+        }
+
+        .input-box:focus {
+            border-color: #00ff66;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+        }
+
+        .output-container {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        pre {
+            width: 100%;
+            background: #050508;
+            border: 1px solid #1f1f2e;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            text-align: left;
+            font-size: 11px;
+            line-height: 1.2;
+            min-height: 150px;
+            white-space: pre;
+            color: #00ff66;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #00ff66;
+            color: #000;
+            border: none;
+            padding: 8px 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #fff;
+            box-shadow: 0 0 10px #fff;
+        }
+
+        footer {
+            margin-top: 30px;
+            color: #444455;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>ASCII ART GENERATOR</h1>
+        <p class="subtitle">Discord sunucunuz için şekilli blok yazılar oluşturun.</p>
+
+        <input type="text" id="textInput" class="input-box" placeholder="Buraya bir şeyler yazın... (Örn: ENES)" maxlength="15">
+
+        <div class="output-container">
+            <button class="copy-btn" id="copyBtn">KOPYALA</button>
+            <pre id="outputResult">Yazı girmeniz bekleniyor...</pre>
+        </div>
+
+        <footer>
+            Enes tarafından yapılmıştır
+        </footer>
+    </div>
+
+    <script>
+        const alphabet = {
+            'A': [" █████╗ ", "██╔══██╗", "███████║", "██╔══██║", "██║  ██║", "╚═╝  ╚═╝"],
+            'B': ["██████╗ ", "██╔══██╗", "██████╔╝", "██╔══██╗", "██████╔╝", "╚══════╝"],
+            'C': [" ██████╗", "██╔════╝", "██║     ", "██║     ", "╚██████╗", " ╚═════╝"],
+            'D': ["██████╗ ", "██╔══██╗", "██║  ██║", "██║  ██║", "██████╔╝", "╚══════╝"],
+            'E': ["███████╗", "██╔════╝", "█████╗  ", "██╔════╝", "███████╗", "╚═══════╝"],
+            'F': ["███████╗", "██╔════╝", "█████╗  ", "██╔════╝", "██║     ", "╚═╝     "],
+            'G': [" ██████╗", "██╔════╝", "██║  ███╗", "██║   ██║", "╚██████╔╝", " ╚═════╝"],
+            'H': ["██║  ██║", "██║  ██║", "███████║", "██╔══██║", "██║  ██║", "╚═╝  ╚═╝"],
+            'I': ["██████╗ ", "╚═██╔═╝ ", "  ██║   ", "  ██║   ", "██████╗ ", "╚═════╝ "],
+            'J': ["     ██╗", "     ██║", "     ██║", "██   ██║", "╚█████╔╝", " ╚════╝ "],
+            'K': ["██║  ██╗", "██║ ██╔╝", "█████═╝ ", "██╔═██╗ ", "██║  ██╗", "╚═╝  ╚═╝"],
+            'L': ["██║     ", "██║     ", "██║     ", "██║     ", "███████╗", "╚═══════╝"],
+            'M': ["███╗   ███╗", "████╗ ████║", "██╔████╔██║", "██║╚██╔╝██║", "██║ ╚═╝ ██║", "╚═╝     ╚═╝"],
+            'N': ["███╗   ██╗", "████╗  ██║", "██╔██╗ ██║", "██║╚██╗██║", "██║ ╚████║", "╚═╝  ╚═══╝"],
+            'O': [" ██████╗ ", "██╔═══██╗", "██║   ██║", "██║   ██║", "╚██████╔╝", " ╚═════╝ "],
+            'P': ["██████╗ ", "██╔══██╗", "██████╔╝", "██╔════╝", "██║     ", "╚═╝     "],
+            'Q': [" ██████╗ ", "██╔═══██╗", "██║   ██║", "██║ 💀██║", "╚██████╔╝", " ╚════██╗"],
+            'R': ["██████╗ ", "██╔══██╗", "██████╔╝", "██╔══██╗", "██║  ██║", "╚═╝  ╚═╝"],
+            'S': [" ██████╗", "██╔════╝", "╚█████╗ ", " ╚═══██╗", "██████╔╝", "╚═════╝ "],
+            'T': ["███████╗", "╚══██╔══╝", "   ██║   ", "   ██║   ", "   ██║   ", "   ╚═╝   "],
+            'U': ["██║  ██║", "██║  ██║", "██║  ██║", "██║  ██║", "╚██████╔╝", " ╚═════╝ "],
+            'V': ["██║  ██╗", "██║  ██║", "██║  ██║", "██║  ██║", "╚█████╔╝", " ╚════╝ "],
+            'W': ["██║     ██╗", "██║     ██║", "██║ ╔█╗ ██║", "██║██╔████║", "╚███╔╝╚███╔╝", " ╚══╝  ╚══╝ "],
+            'X': ["██╗  ██╗", "╚██╗██╔╝", " ╚███╔╝ ", " ██╔██╗ ", "██║  ██╗", "╚═╝  ╚═╝"],
+            'Y': ["██╗  ██╗", "╚██╗██╔╝", " ╚███╔╝ ", "  ██║   ", "  ██║   ", "  ╚═╝   "],
+            'Z': ["███████╗", "╚══███╔╝", "  ███╔╝ ", " ███╔╝  ", "███████╗", "╚═══════╝"],
+            ' ': ["    ", "    ", "    ", "    ", "    ", "    "]
+        };
+
+        const textInput = document.getElementById('textInput');
+        const outputResult = document.getElementById('outputResult');
+        const copyBtn = document.getElementById('copyBtn');
+
+        textInput.addEventListener('input', () => {
+            const rawText = textInput.value.toUpperCase();
+            if (rawText.length === 0) {
+                outputResult.innerText = "Yazı girmeniz bekleniyor...";
+                return;
+            }
+
+            let asciiRows = ["", "", "", "", "", ""];
+            
+            for (let char of rawText) {
+                if (alphabet[char]) {
+                    for (let i = 0; i < 6; i++) {
+                        asciiRows[i] += alphabet[char][i] + " ";
+                    }
+                }
+            }
+
+            outputResult.innerText = asciiRows.join("\n");
+        });
+
+        copyBtn.addEventListener('click', () => {
+            const textToCopy = outputResult.innerText;
+            if (textToCopy === "Yazı girmeniz bekleniyor...") return;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = copyBtn.innerText;
+                copyBtn.innerText = "KOPYALANDI!";
+                copyBtn.style.background = "#fff";
+                setTimeout(() => {
+                    copyBtn.innerText = originalText;
+                    copyBtn.style.background = "#00ff66";
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>
